@@ -2,6 +2,8 @@
 
 A Next.js marketplace client: Firestore listings, Firebase Auth, optional Cloudflare R2 image uploads, and client-side global search (ranked, debounced).
 
+**Production:** [https://marketplace-app-woad.vercel.app/](https://marketplace-app-woad.vercel.app/)
+
 ## Project status
 
 **This codebase is finalized for the current scope** — stable, production-oriented, and intentionally left open for future enhancements. New work (messaging, favorites persistence, admin tools, server-side search, etc.) can build on the existing layout: `app/` routes, `components/`, `hooks/`, and `lib/` helpers without restructuring the core.
@@ -55,7 +57,7 @@ A Next.js marketplace client: Firestore listings, Firebase Auth, optional Cloudf
 
 1. Import the repo in [Vercel](https://vercel.com) and keep the default **Framework Preset: Next.js** (install: `npm install`, build: `npm run build`, output: handled by Next — no custom output directory in the Vercel UI).
 2. Add **Environment Variables** from `.env.example`: all **`NEXT_PUBLIC_FIREBASE_*`** for Production (and Preview if needed). Add **`R2_*`** only if you use uploads; mark them as sensitive — they stay server-side for `app/api/r2-upload`.
-3. After the first deploy, add your **`*.vercel.app`** hostname (and custom domain) under Firebase → Authentication → **Authorized domains**. For Google sign-in, add the same origins in Google Cloud Console → OAuth client **Authorized JavaScript origins** (`https://your-app.vercel.app`, etc.).
+3. After the first deploy, add your **`*.vercel.app`** hostname (and custom domain) under Firebase → Authentication → **Authorized domains**. For Google sign-in, add the same origins in Google Cloud Console → OAuth client **Authorized JavaScript origins** (e.g. `https://marketplace-app-woad.vercel.app`, etc.).
 
 ### Progressive Web App (install on mobile)
 

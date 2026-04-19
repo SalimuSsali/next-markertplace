@@ -28,7 +28,7 @@ export function BottomTabBar({ variant = "fixed" }) {
 
   const navClass =
     variant === "embedded"
-      ? "relative z-40 shrink-0 border-t border-gray-200 bg-white py-1.5 shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.06)]"
+      ? "relative z-40 shrink-0 border-t border-gray-200 bg-white py-1.5 pb-[max(0.35rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.06)]"
       : "fixed bottom-0 left-0 right-0 z-50 w-full border-t border-gray-200 bg-white py-1.5 pb-[max(0.35rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_-2px_rgba(0,0,0,0.06)]";
 
   function sideTab(active) {
@@ -37,7 +37,8 @@ export function BottomTabBar({ variant = "fixed" }) {
     }`;
   }
 
-  const innerPad = variant === "fixed" ? "mx-auto max-w-[360px]" : "";
+  const innerPad =
+    variant === "fixed" ? "w-full md:mx-auto md:max-w-[360px]" : "";
   /** Tiny labels + ellipsis so seven tabs fit narrow widths without overlapping. */
   const labelClass =
     "block w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-center text-[7px] font-medium leading-none tracking-tight";

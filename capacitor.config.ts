@@ -5,12 +5,15 @@ import path from "node:path";
 loadEnv({ path: path.resolve(__dirname, ".env.local") });
 loadEnv({ path: path.resolve(__dirname, ".env") });
 
+/** Production site loaded in the Android WebView when `CAPACITOR_SERVER_URL` is unset. */
+const DEFAULT_SERVER_URL = "https://marketplace-app-woad.vercel.app";
+
 /**
  * Android shell loads your Next.js deployment (or dev server) in a WebView.
- * Set in `.env.local`: CAPACITOR_SERVER_URL=https://your-app.vercel.app
- * Emulator + local Next (port 3010): http://10.0.2.2:3010
+ * Override in `.env.local`: `CAPACITOR_SERVER_URL=...` (e.g. `http://10.0.2.2:3010` for emulator + local dev).
  */
-const url = (process.env.CAPACITOR_SERVER_URL ?? "").trim();
+const url =
+  (process.env.CAPACITOR_SERVER_URL ?? "").trim() || DEFAULT_SERVER_URL;
 
 const config: CapacitorConfig = {
   appId: "com.next.marketplace",
@@ -35,12 +38,10 @@ const config: CapacitorConfig = {
   },
 };
 
-if (url) {
-  config.server = {
-    url,
-    cleartext: url.startsWith("http://"),
-    androidScheme: url.startsWith("https") ? "https" : "http",
-  };
-}
+config.server = {
+  url,
+  cleartext: url.startsWith("http://"),
+  androidScheme: url.startsWith("https") ? "https" : "http",
+};
 
 export default config;

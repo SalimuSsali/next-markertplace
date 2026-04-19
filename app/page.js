@@ -28,6 +28,14 @@ import { useSearchParams } from "next/navigation";
 /** Header “your area” label (no GPS); used for optional nearby alert matching */
 const USER_AREA = "Your area";
 
+/** Full viewport on phones / WebView; centered phone mockup from `md` up (desktop demos). */
+const HOME_OUTER =
+  "min-h-dvh w-full bg-white md:flex md:min-h-screen md:items-center md:justify-center md:bg-gray-200";
+const HOME_FRAME =
+  "flex min-h-0 w-full flex-col overflow-hidden bg-white max-md:h-[100dvh] max-md:max-h-[100dvh] md:h-[740px] md:w-[360px] md:flex-none md:rounded-3xl md:bg-black md:p-[6px] md:shadow-xl";
+const HOME_INNER =
+  "flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white md:rounded-2xl";
+
 function AppBrandMark() {
   return (
     <div className="flex items-center gap-2">
@@ -189,11 +197,11 @@ function HomePageInner() {
 
   if (!mounted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-200">
-        <div className="flex h-[740px] w-[360px] flex-col rounded-3xl bg-black p-[6px] shadow-xl">
-          <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white">
+      <div className={HOME_OUTER}>
+        <div className={HOME_FRAME}>
+          <div className={HOME_INNER}>
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-              <div className="border-b border-gray-200 bg-emerald-600 px-4 pb-4 pt-4 text-white">
+              <div className="border-b border-gray-200 bg-emerald-600 px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] text-white">
                 <AppBrandMark />
                 <div className="mt-3 h-11 w-full rounded-xl bg-white/20" aria-hidden />
               </div>
@@ -211,11 +219,11 @@ function HomePageInner() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-200">
-      <div className="flex h-[740px] w-[360px] flex-col rounded-3xl bg-black p-[6px] shadow-xl">
-        <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white">
+    <div className={HOME_OUTER}>
+      <div className={HOME_FRAME}>
+        <div className={HOME_INNER}>
           <div
-            className="flex shrink-0 justify-center bg-white pt-2"
+            className="hidden shrink-0 justify-center bg-white pt-2 md:flex"
             aria-hidden
           >
             <div className="h-5 w-24 rounded-full bg-black" />
@@ -223,7 +231,7 @@ function HomePageInner() {
           <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
             <div className="relative flex h-full min-h-0 w-full flex-1 flex-col bg-white shadow-sm">
               <header className="shrink-0">
-                <div className="border-b border-gray-200 bg-emerald-600 px-4 pb-4 pt-4 text-white">
+                <div className="border-b border-gray-200 bg-emerald-600 px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] text-white">
                   <div className="flex items-center justify-between gap-2">
                     <AppBrandMark />
                     <div className="flex items-center gap-2">
@@ -429,7 +437,7 @@ function HomePageInner() {
                         </button>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                         {displayItems.map((item) => {
                           const url = getItemPrimaryImageUrl(item);
                           const imageCount = getItemImageUrls(item).length;
@@ -568,11 +576,11 @@ export default function HomePage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-gray-200">
-          <div className="flex h-[740px] w-[360px] flex-col rounded-3xl bg-black p-[6px] shadow-xl">
-            <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white">
+        <div className={HOME_OUTER}>
+          <div className={HOME_FRAME}>
+            <div className={HOME_INNER}>
               <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                <div className="border-b border-gray-200 bg-emerald-600 px-4 pb-4 pt-4 text-white">
+                <div className="border-b border-gray-200 bg-emerald-600 px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] text-white">
                   <AppBrandMark />
                   <div className="mt-3 h-11 w-full rounded-xl bg-white/20" aria-hidden />
                 </div>

@@ -18,17 +18,15 @@ The Next.js server is **not** bundled inside the APK. The WebView loads your app
    npx cap add android
    ```
 
-3. **`.env.local`** — set the URL the app should open:
+3. **Production URL in the app** — `capacitor.config.ts` defaults the WebView to **`https://marketplace-app-woad.vercel.app`**. Run **`npm run android:sync`** so Android Studio picks up that URL (written under `android/app/src/main/assets/`).
 
-   ```env
-   CAPACITOR_SERVER_URL=https://your-deployment.vercel.app
-   ```
-
-   **Android emulator** hitting **Next dev** on your PC (`npm run dev` on port 3010):
+   **Optional `.env.local`** — override for local Next on your PC (**Android emulator**, Next on port 3010):
 
    ```env
    CAPACITOR_SERVER_URL=http://10.0.2.2:3010
    ```
+
+   Then run **`npm run android:sync`** again before building in Android Studio.
 
 4. **Sync Capacitor** (after `android/` exists):
 
