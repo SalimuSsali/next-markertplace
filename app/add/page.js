@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useFirebaseAuthUser } from "../../hooks/useFirebaseAuthUser";
 import { descriptionWordCount } from "../../lib/descriptionWords";
 import { parseTagsInput } from "../../lib/itemFields";
@@ -12,6 +12,7 @@ import { newShopExpiresAt } from "../../lib/expiry";
 import {
   getUserTypeForUserId,
   newItemLifecycleFields,
+  USER_TYPE_SHOP,
 } from "../../lib/itemLifecycle";
 import {
   planItemImageFileBatch,
@@ -197,6 +198,20 @@ function AddPageInner() {
           createdAt: new Date(),
           expiresAt: newShopExpiresAt(),
         });
+        const shopOwnerUid = String(authUser?.uid ?? "").trim();
+        if (shopOwnerUid) {
+          await setDoc(
+            doc(db, "users", shopOwnerUid),
+            {
+              uid: shopOwnerUid,
+              userId: shopOwnerUid,
+              email: postEmail,
+              userType: USER_TYPE_SHOP,
+              updatedAt: serverTimestamp(),
+            },
+            { merge: true },
+          );
+        }
         await notifyPostCreated(postEmail);
         alert("Posted successfully");
         router.push("/shops");
