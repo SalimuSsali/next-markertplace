@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Match Next.js themeColor (#0d9488) -->
+    <color name="splash_background">#0d9488</color>
+    <color name="colorPrimary">#0d9488</color>
+    <color name="colorPrimaryDark">#0f766e</color>
+    <color name="colorAccent">#0d9488</color>
+</resources>
