@@ -61,11 +61,9 @@ async function main() {
     const dir = path.join(androidRes, folder);
     if (!existsSync(dir)) continue;
     const size = launcherSizes[folder] ?? 96;
-    for (const name of ["ic_launcher.png", "ic_launcher_round.png", "ic_launcher_foreground.png"]) {
+    for (const name of ["ic_launcher.png", "ic_launcher_round.png"]) {
       const p = path.join(dir, name);
-      if (existsSync(p)) {
-        await writeFlatPng(p, size, LAUNCHER_COLOR);
-      }
+      await writeFlatPng(p, size, LAUNCHER_COLOR);
     }
   }
 
