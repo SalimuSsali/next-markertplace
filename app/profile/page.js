@@ -24,6 +24,9 @@ import {
 } from "../../lib/sellerIdentity";
 import { ensureUserDoc } from "../../lib/ensureUserDoc";
 
+const AUTH_MISSING_ALERT =
+  "Auth is not configured. Add NEXT_PUBLIC_FIREBASE_* keys from Firebase Console (see .env.example) to .env.local or Vercel, then restart / redeploy.";
+
 export default function ProfilePage() {
   const [authUser, setAuthUser] = useState(null);
   const [signupPath, setSignupPath] = useState(null);
@@ -102,7 +105,7 @@ export default function ProfilePage() {
 
   async function handleGoogleSignIn() {
     if (!auth) {
-      alert("Auth is not configured.");
+      alert(AUTH_MISSING_ALERT);
       return;
     }
     setAuthFormError(null);
@@ -141,7 +144,7 @@ export default function ProfilePage() {
 
   async function handleGoogleSignInFullPage() {
     if (!auth) {
-      alert("Auth is not configured.");
+      alert(AUTH_MISSING_ALERT);
       return;
     }
     setAuthFormError(null);
@@ -172,7 +175,7 @@ export default function ProfilePage() {
   async function handleEmailSignup(e) {
     e.preventDefault();
     if (!auth) {
-      alert("Auth is not configured.");
+      alert(AUTH_MISSING_ALERT);
       return;
     }
     const email = emailDraft.trim();
@@ -220,7 +223,7 @@ export default function ProfilePage() {
   async function handleEmailSignin(e) {
     e.preventDefault();
     if (!auth) {
-      alert("Auth is not configured.");
+      alert(AUTH_MISSING_ALERT);
       return;
     }
     const email = emailDraft.trim();
@@ -262,7 +265,7 @@ export default function ProfilePage() {
 
   async function handlePasswordReset() {
     if (!auth) {
-      alert("Auth is not configured.");
+      alert(AUTH_MISSING_ALERT);
       return;
     }
     const email = emailDraft.trim();
@@ -321,7 +324,44 @@ export default function ProfilePage() {
           Browse without signing in. To post, choose <strong>email &amp; password</strong> or{" "}
           <strong>Google</strong> below, then sign in.
         </p>
-        {pageHost ? (
+        {!auth ? (
+          <div className="mt-2 rounded-lg border border-red-200 bg-red-50/90 px-3 py-2 text-xs text-red-950">
+            <p className="font-semibold">Auth is not configured in this build</p>
+            <p className="mt-1">
+              Firebase Web SDK never started because required{" "}
+              <code className="rounded bg-white px-1 py-0.5 font-mono text-[11px]">
+                NEXT_PUBLIC_FIREBASE_*
+              </code>{" "}
+              variables are missing or empty (see <code className="font-mono text-[11px]">.env.example</code>
+              ). This is separate from “Google” toggles in Firebase—without these keys, every sign-in
+              button will fail.
+            </p>
+            <ol className="mt-2 list-decimal space-y-1 pl-4">
+              <li>
+                <strong>Firebase Console</strong> → your project →{" "}
+                <strong>Project settings</strong> (gear) → <strong>Your apps</strong> → Web (
+                <code className="font-mono text-[11px]">&lt;/&gt;</code>) → copy the{" "}
+                <code className="font-mono text-[11px]">firebaseConfig</code> object.
+              </li>
+              <li>
+                Put matching values in <code className="font-mono text-[11px]">.env.local</code>{" "}
+                locally, then <strong>restart</strong> the dev server.
+              </li>
+              <li>
+                On <strong>Vercel</strong> → Project → Environment Variables → add the same{" "}
+                <code className="font-mono text-[11px]">NEXT_PUBLIC_FIREBASE_*</code> keys for{" "}
+                <strong>Production</strong> → <strong>Redeploy</strong>.
+              </li>
+              <li>
+                Then enable <strong>Authentication</strong> → <strong>Sign-in method</strong> →{" "}
+                <strong>Google</strong> → On; under <strong>Settings</strong> →{" "}
+                <strong>Authorized domains</strong>, add your site host (e.g.{" "}
+                <code className="font-mono text-[11px]">localhost</code>,{" "}
+                <code className="font-mono text-[11px]">your-app.vercel.app</code>).
+              </li>
+            </ol>
+          </div>
+        ) : pageHost ? (
           <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50/90 px-3 py-2 text-xs text-amber-950">
             <span className="font-semibold">Google sign-in:</span> Firebase → Authentication →
             Settings → <span className="font-medium">Authorized domains</span> → Add{" "}
