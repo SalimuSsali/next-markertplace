@@ -227,11 +227,11 @@ export default function RentalsPage() {
               </span>
             ) : null}
           </label>
-          <div className="flex flex-col gap-2">
-            <span className="app-label mb-0">Images</span>
-            <p className="text-xs text-neutral-500">
-              Pick photos from your device gallery or files (up to {MAX_ITEM_IMAGES}). They upload
-              to storage and the link below updates automatically.
+          <div className="flex flex-col gap-2 rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
+            <span className="app-label mb-0 text-base">Upload photos</span>
+            <p className="text-xs text-neutral-600">
+              Select pictures from this device (max {MAX_ITEM_IMAGES}). They are uploaded to cloud
+              storage; the Image URL field updates when done.
             </p>
             <input
               id="rental-photo-upload"
@@ -240,23 +240,22 @@ export default function RentalsPage() {
               multiple
               onChange={onRentalImageChange}
               disabled={imageUploading || imageUrls.length >= MAX_ITEM_IMAGES}
-              className="sr-only"
+              className="app-input w-full py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white disabled:opacity-60"
               aria-label="Choose images from device storage"
             />
-            {/* Native <label htmlFor> opens the file picker reliably on Android WebView; avoid JS .click() only. */}
             <label
               htmlFor="rental-photo-upload"
-              className={`inline-flex w-full cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold shadow-sm transition sm:w-auto ${
+              className={`flex w-full cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-center text-sm font-semibold shadow-sm transition ${
                 imageUploading || imageUrls.length >= MAX_ITEM_IMAGES
-                  ? "cursor-not-allowed bg-emerald-400/70 text-white opacity-70"
+                  ? "cursor-not-allowed bg-neutral-300 text-neutral-600 opacity-80"
                   : "bg-emerald-600 text-white hover:bg-emerald-700"
               }`}
             >
               {imageUploading
                 ? "Uploading…"
                 : imageUrls.length > 0
-                  ? "Add more photos"
-                  : "Choose from gallery / files"}
+                  ? "Add more photos (tap here)"
+                  : "Tap to choose photos"}
             </label>
             <span className="text-xs text-neutral-500">
               {imageUploading
@@ -285,7 +284,7 @@ export default function RentalsPage() {
               </div>
             ) : null}
             <label className="app-label mt-1">
-              Image URL
+              Image URL (optional if you uploaded photos)
               <input
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
@@ -294,8 +293,8 @@ export default function RentalsPage() {
                 autoComplete="off"
                 placeholder={
                   imageUrls.length
-                    ? "Filled after upload — remove photos to edit manually"
-                    : "https://… or use “Choose from gallery” above"
+                    ? "Set automatically after upload — remove photos to type a link"
+                    : "Paste a link here, or upload photos above"
                 }
                 className="app-input"
                 readOnly={Boolean(imageUrls.length)}

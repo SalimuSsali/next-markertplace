@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
-const CACHE_STATIC = "next-marketplace-static-v1";
-const CACHE_PAGES = "next-marketplace-pages-v1";
+const CACHE_STATIC = "next-marketplace-static-v2";
+const CACHE_PAGES = "next-marketplace-pages-v2";
 
 self.addEventListener("install", (event) => {
   const precache = [
@@ -83,7 +83,7 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request)
+      fetch(new Request(request.url, { cache: "no-cache", credentials: request.credentials }))
         .then((res) => {
           if (res.ok) {
             const copy = res.clone();
