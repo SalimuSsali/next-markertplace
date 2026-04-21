@@ -200,7 +200,7 @@ export default function ShopDetailPage() {
         alert(waParsed.error);
         return;
       }
-    const userType = await getUserTypeForUserId(db, authUser.uid);
+      const userType = await getUserTypeForUserId(db, authUser.uid);
       await addDoc(collection(db, "items"), {
         title,
         name: title,
@@ -216,9 +216,9 @@ export default function ShopDetailPage() {
         email: postEmail,
         shopId: id,
         userId: authUser.uid,
-      userType,
+        userType,
         ...defaultItemLocationForCreate(),
-      ...newItemLifecycleFields(userType),
+        ...newItemLifecycleFields(userType),
       });
       await notifyPostCreated(postEmail);
       setPostTitle("");

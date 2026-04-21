@@ -6,6 +6,7 @@ self.addEventListener("install", (event) => {
   const precache = [
     "/offline",
     "/manifest.json",
+    "/app-icon.png",
     "/icon.svg",
     "/icon-192.png",
     "/icon-512.png",
@@ -44,6 +45,7 @@ self.addEventListener("fetch", (event) => {
 
   // Icons / vector fallback: cache-first (do not intercept `/sw.js` — updates must hit the network).
   if (
+    url.pathname === "/app-icon.png" ||
     url.pathname === "/icon.svg" ||
     url.pathname === "/icon-192.png" ||
     url.pathname === "/icon-512.png" ||

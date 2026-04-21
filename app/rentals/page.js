@@ -138,7 +138,11 @@ export default function RentalsPage() {
   }
 
   function removeRentalImageAt(index) {
-    setImageUrls((prev) => prev.filter((_, i) => i !== index));
+    setImageUrls((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      if (next.length === 0) setImageUrl("");
+      return next;
+    });
   }
 
   return (
@@ -223,23 +227,31 @@ export default function RentalsPage() {
               </span>
             ) : null}
           </label>
-          <label className="app-label">
-            Images
+          <div className="flex flex-col gap-2">
+            <span className="app-label mb-0">Photos</span>
+            <p className="text-xs text-neutral-500">
+              Upload pictures from your phone or computer. You can add up to {MAX_ITEM_IMAGES}{" "}
+              images.
+            </p>
+            <label className="sr-only" htmlFor="rental-photo-upload">
+              Choose images from device storage
+            </label>
             <input
+              id="rental-photo-upload"
               type="file"
               accept="image/*"
               multiple
               onChange={onRentalImageChange}
               disabled={imageUploading}
-              className="app-input py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-blue-700 disabled:opacity-60"
+              className="app-input py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-emerald-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-emerald-800 disabled:opacity-60"
             />
             <span className="text-xs text-neutral-500">
               {imageUploading
                 ? "Uploading…"
-                : `Choose one or more images (${imageUrls.length}/${MAX_ITEM_IMAGES}).`}
+                : `Selected: ${imageUrls.length}/${MAX_ITEM_IMAGES} image${imageUrls.length === 1 ? "" : "s"}.`}
             </span>
             {imageUrls.length ? (
-              <div className="mt-2 grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {imageUrls.map((u, i) => (
                   <div
                     key={`${u}-${i}`}
@@ -259,17 +271,25 @@ export default function RentalsPage() {
                 ))}
               </div>
             ) : null}
-          </label>
-          <label className="app-label">
-            Image URL
-            <input
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              type="text"
-              placeholder="Filled after upload"
-              className="app-input"
-            />
-          </label>
+            <label className="app-label mt-1">
+              Optional: image URL
+              <input
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                type="url"
+                inputMode="url"
+                autoComplete="off"
+                placeholder="https://… if you prefer a link instead of upload"
+                className="app-input"
+                disabled={Boolean(imageUrls.length)}
+              />
+            </label>
+            {imageUrls.length ? (
+              <p className="text-xs text-neutral-500">
+                Remove all uploaded photos above to paste a URL instead.
+              </p>
+            ) : null}
+          </div>
           <label className="app-label">
             Location
             <input

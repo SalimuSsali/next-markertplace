@@ -1,13 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AppBrandMark } from "./AppBrandMark";
 
-/**
- * Shows a simple brand header on all pages except `/` (home has its own header).
- * Keeps hydration safe by rendering only after mount.
- */
+/** Brand header on all pages except `/` (home has its own header). */
 export function GlobalHeaderMount() {
   const pathname = usePathname() || "";
   if (pathname === "/") return null;
@@ -20,17 +17,11 @@ export function GlobalHeaderMount() {
           className="flex items-center gap-2 no-underline"
           aria-label="Go to home"
         >
-          <Image
-            src="/app-icon.png"
-            alt=""
-            width={28}
-            height={28}
-            className="h-7 w-7 rounded-lg shadow-sm"
+          <AppBrandMark
+            size={28}
+            wordmarkClassName="text-base font-black tracking-tight text-neutral-900"
             priority
           />
-          <span className="text-base font-black tracking-tight text-neutral-900">
-            Next
-          </span>
         </Link>
       </div>
     </header>

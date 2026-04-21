@@ -42,7 +42,13 @@
     ".next-win2/types/**/*.ts",
     ".next-win2/dev/types/**/*.ts",
     ".next-win3/types/**/*.ts",
-    ".next-win3/dev/types/**/*.ts"
+    ".next-win3/dev/types/**/*.ts",
+    ".next-ci/types/**/*.ts",
+    ".next-ci/dev/types/**/*.ts",
+    ".next-build2/types/**/*.ts",
+    ".next-build2/dev/types/**/*.ts",
+    ".next-build3/types/**/*.ts",
+    ".next-build3/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

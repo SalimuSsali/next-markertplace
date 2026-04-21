@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { collection, getDocs } from "firebase/firestore";
+import { AppBrandMark } from "../components/AppBrandMark";
 import { EmbeddedBottomTabBarMount } from "../components/EmbeddedBottomTabBarMount";
 import { ItemExpiryCountdown } from "../components/ItemExpiryCountdown";
 import { SearchHighlightText } from "../components/SearchHighlightText";
@@ -35,22 +35,6 @@ const HOME_FRAME =
   "flex min-h-0 w-full flex-col overflow-hidden bg-white max-md:h-[100dvh] max-md:max-h-[100dvh] md:h-[740px] md:w-[360px] md:flex-none md:rounded-3xl md:bg-black md:p-[6px] md:shadow-xl";
 const HOME_INNER =
   "flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-white md:rounded-2xl";
-
-function AppBrandMark() {
-  return (
-    <div className="flex items-center gap-2">
-      <Image
-        src="/app-icon.png"
-        alt=""
-        width={32}
-        height={32}
-        className="h-8 w-8 rounded-lg shadow-sm"
-        priority
-      />
-      <span className="text-xl font-black tracking-tight">Next</span>
-    </div>
-  );
-}
 
 function HomePageInner() {
   const router = useRouter();
@@ -202,7 +186,7 @@ function HomePageInner() {
           <div className={HOME_INNER}>
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <div className="border-b border-gray-200 bg-emerald-600 px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] text-white">
-                <AppBrandMark />
+                <AppBrandMark priority />
                 <div className="mt-3 h-11 w-full rounded-xl bg-white/20" aria-hidden />
               </div>
               <main className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-4 pb-6 pt-4">
@@ -233,7 +217,7 @@ function HomePageInner() {
               <header className="shrink-0">
                 <div className="border-b border-gray-200 bg-emerald-600 px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] text-white">
                   <div className="flex items-center justify-between gap-2">
-                    <AppBrandMark />
+                    <AppBrandMark priority />
                     <div className="flex items-center gap-2">
                       <Link
                         href="/safety"
@@ -581,7 +565,7 @@ export default function HomePage() {
             <div className={HOME_INNER}>
               <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                 <div className="border-b border-gray-200 bg-emerald-600 px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] text-white">
-                  <AppBrandMark />
+                  <AppBrandMark priority />
                   <div className="mt-3 h-11 w-full rounded-xl bg-white/20" aria-hidden />
                 </div>
                 <main className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-4 pb-6 pt-4">
