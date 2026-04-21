@@ -1,5 +1,7 @@
 /**
  * Ensures raster PWA icons exist under `public/` (required by manifest + layout metadata).
+ * Master source (preferred): `assets/icon.png` (e.g. 1024×1024) for Capacitor + web.
+ * Fallback: `public/app-icon.png`.
  * Uses pngjs on all platforms so Vercel/Linux builds succeed without PowerShell.
  */
 import fs from "node:fs";
@@ -10,7 +12,14 @@ import { PNG } from "pngjs";
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pub = path.join(root, "public");
 
-const SOURCE_ICON = path.join(pub, "app-icon.png");
+const ASSETS_MASTER_ICON = path.join(root, "assets", "icon.png");
+const LEGACY_SOURCE_ICON = path.join(pub, "app-icon.png");
+
+function resolveSourceIconPath() {
+  if (fs.existsSync(ASSETS_MASTER_ICON)) return ASSETS_MASTER_ICON;
+  if (fs.existsSync(LEGACY_SOURCE_ICON)) return LEGACY_SOURCE_ICON;
+  return null;
+}
 
 const required = [
   "app-icon.png",
@@ -23,6 +32,16 @@ const required = [
 
 function missing() {
   return required.filter((f) => !fs.existsSync(path.join(pub, f)));
+}
+
+/** If master in `assets/` is newer than generated `icon-512.png`, refresh `public/` icons. */
+function masterNewerThanOutputs() {
+  if (!fs.existsSync(ASSETS_MASTER_ICON)) return false;
+  const icon512 = path.join(pub, "icon-512.png");
+  if (!fs.existsSync(icon512)) return true;
+  const a = fs.statSync(ASSETS_MASTER_ICON).mtimeMs;
+  const b = fs.statSync(icon512).mtimeMs;
+  return a > b;
 }
 
 function readPng(filepath) {
@@ -87,8 +106,13 @@ function resizePngNearest(src, size) {
   return out;
 }
 
-function generateAll() {
-  const src = readPng(SOURCE_ICON);
+function generateAll(sourcePath) {
+  const appIconDest = path.join(pub, "app-icon.png");
+  if (path.resolve(sourcePath) !== path.resolve(appIconDest)) {
+    fs.mkdirSync(pub, { recursive: true });
+    fs.copyFileSync(sourcePath, appIconDest);
+  }
+  const src = readPng(sourcePath);
   writePng(path.join(pub, "icon-192.png"), resizePngNearest(src, 192));
   writePng(path.join(pub, "icon-512.png"), resizePngNearest(src, 512));
   const fav64 = resizePngNearest(src, 64);
@@ -99,19 +123,24 @@ function generateAll() {
 }
 
 const m = missing();
-if (m.length === 0) {
+if (m.length === 0 && !masterNewerThanOutputs()) {
   process.exit(0);
 }
 
-console.warn(`[pwa] Missing icon files: ${m.join(", ")} — generating via pngjs…`);
+if (m.length > 0) {
+  console.warn(`[pwa] Missing icon files: ${m.join(", ")} — generating via pngjs…`);
+} else {
+  console.warn("[pwa] assets/icon.png is newer than public outputs — regenerating…");
+}
 
 try {
-  if (!fs.existsSync(SOURCE_ICON)) {
+  const sourcePath = resolveSourceIconPath();
+  if (!sourcePath) {
     throw new Error(
-      "Missing public/app-icon.png. Place your app icon at public/app-icon.png and re-run.",
+      "Missing assets/icon.png or public/app-icon.png. Add your 1024×1024 logo as assets/icon.png (recommended) and re-run.",
     );
   }
-  generateAll();
+  generateAll(sourcePath);
   console.warn("[pwa] Wrote PNG icons under public/.");
 } catch (e) {
   console.error("[pwa] Failed to generate icons:", e?.message || e);

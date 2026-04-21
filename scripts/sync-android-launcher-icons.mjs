@@ -1,6 +1,7 @@
 /**
- * Copies scaled launcher icons from public/icon-512.png into Android mipmap folders.
- * Run after `npx cap add android` (or whenever you change the source icon).
+ * @deprecated Prefer `npm run android:icons` (@capacitor/assets from `assets/icon.png`).
+ * This script overwrites mipmaps from `public/icon-512.png` and can undo adaptive icons.
+ * Only run `npm run android:icons:legacy` if you intentionally want that old path.
  */
 import { existsSync } from "node:fs";
 import path from "node:path";

@@ -31,3 +31,4 @@ public/firebase-messaging-sw.js
 
 # TypeScript incremental build info
 tsconfig.tsbuildinfo
+.vercel
