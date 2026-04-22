@@ -332,28 +332,24 @@ export default function RentalsPage() {
             ) : null}
           </label>
 
-          <label className="app-label">
-            Image URL (optional if you uploaded photos)
-            <input
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              type="url"
-              inputMode="url"
-              autoComplete="off"
-              placeholder={
-                imageUrls.length
-                  ? "Filled from your first photo — remove photos to paste a link"
-                  : "Or paste an image URL instead of uploading"
-              }
-              className="app-input"
-              readOnly={Boolean(imageUrls.length)}
-            />
-          </label>
-          {imageUrls.length ? (
-            <p className="text-xs text-neutral-500">
-              Remove uploaded photos to enter a URL manually.
+          {imageUrls.length === 0 ? (
+            <label className="app-label">
+              Image URL (optional — skip if you use photos above)
+              <input
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                type="url"
+                inputMode="url"
+                autoComplete="off"
+                placeholder="Paste an image link, or choose files under Photos"
+                className="app-input"
+              />
+            </label>
+          ) : (
+            <p className="text-xs text-neutral-600">
+              Your photos are shown above. Remove them with ✕ if you want to use a link instead.
             </p>
-          ) : null}
+          )}
 
           <button
             type="submit"
