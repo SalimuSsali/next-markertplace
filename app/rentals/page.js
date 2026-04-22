@@ -290,12 +290,8 @@ export default function RentalsPage() {
             />
           </label>
 
-          <div className="flex flex-col gap-2 rounded-xl border border-emerald-100 bg-emerald-50/40 p-3">
-            <span className="app-label mb-0 text-base">Photos</span>
-            <p className="text-xs text-neutral-600">
-              JPEG, PNG, GIF, or WebP — up to {MAX_ITEM_IMAGES}. Uploaded to your R2 bucket via the
-              same flow as other listings.
-            </p>
+          <label className="app-label">
+            Photos (up to {MAX_ITEM_IMAGES})
             <input
               id="rental-photo-upload"
               type="file"
@@ -303,30 +299,18 @@ export default function RentalsPage() {
               multiple
               onChange={onRentalImagesChange}
               disabled={imageUploading || imageUrls.length >= MAX_ITEM_IMAGES}
-              className="app-input w-full py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white disabled:opacity-60"
-              aria-label="Choose rental photos"
+              className="app-input py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-blue-700 disabled:opacity-60"
+              aria-label={`Choose up to ${MAX_ITEM_IMAGES} photos`}
             />
-            <label
-              htmlFor="rental-photo-upload"
-              className={`flex w-full cursor-pointer items-center justify-center rounded-xl px-4 py-3 text-center text-sm font-semibold shadow-sm transition ${
-                imageUploading || imageUrls.length >= MAX_ITEM_IMAGES
-                  ? "cursor-not-allowed bg-neutral-300 text-neutral-600 opacity-80"
-                  : "bg-emerald-600 text-white hover:bg-emerald-700"
-              }`}
-            >
+            <span className="text-xs font-normal text-neutral-500">
               {imageUploading
                 ? "Uploading…"
                 : imageUrls.length > 0
-                  ? "Add more photos"
-                  : "Choose photos"}
-            </label>
-            <span className="text-xs text-neutral-500">
-              {imageUploading
-                ? "Uploading…"
-                : `${imageUrls.length}/${MAX_ITEM_IMAGES} photo${imageUrls.length === 1 ? "" : "s"}.`}
+                  ? `${imageUrls.length} file${imageUrls.length === 1 ? "" : "s"} added (max ${MAX_ITEM_IMAGES}).`
+                  : "JPEG, PNG, GIF, or WebP."}
             </span>
             {imageUrls.length ? (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="mt-1 grid grid-cols-3 gap-2">
                 {imageUrls.map((u, i) => (
                   <div
                     key={`${u}-${i}`}
@@ -346,7 +330,7 @@ export default function RentalsPage() {
                 ))}
               </div>
             ) : null}
-          </div>
+          </label>
 
           <label className="app-label">
             Image URL (optional if you uploaded photos)
@@ -374,9 +358,9 @@ export default function RentalsPage() {
           <button
             type="submit"
             disabled={saving || imageUploading}
-            className="app-btn-primary disabled:cursor-not-allowed disabled:opacity-60"
+            className="app-btn-primary font-bold disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {saving ? "Saving…" : "Publish rental"}
+            {saving ? "Saving…" : "Submit"}
           </button>
         </form>
       ) : null}
