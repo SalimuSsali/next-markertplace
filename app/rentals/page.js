@@ -260,7 +260,7 @@ export default function RentalsPage() {
             <input
               id="rental-photo-upload"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/gif,image/webp"
               multiple
               onChange={onRentalImageChange}
               disabled={imageUploading || imageUrls.length >= MAX_ITEM_IMAGES}
