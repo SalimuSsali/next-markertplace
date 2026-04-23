@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
-const CACHE_STATIC = "next-marketplace-static-v2";
-const CACHE_PAGES = "next-marketplace-pages-v2";
+const CACHE_STATIC = "marketplace-app-43621-static-v1";
+const CACHE_PAGES = "marketplace-app-43621-pages-v1";
 
 self.addEventListener("install", (event) => {
   const precache = [

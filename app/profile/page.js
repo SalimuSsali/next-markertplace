@@ -107,7 +107,7 @@ export default function ProfilePage() {
 
   async function handleGoogleSignIn() {
     if (!auth) {
-      alert(AUTH_MISSING_ALERT);
+      setAuthFormError(AUTH_MISSING_ALERT);
       return;
     }
     setAuthFormError(null);
@@ -146,7 +146,7 @@ export default function ProfilePage() {
 
   async function handleGoogleSignInFullPage() {
     if (!auth) {
-      alert(AUTH_MISSING_ALERT);
+      setAuthFormError(AUTH_MISSING_ALERT);
       return;
     }
     setAuthFormError(null);
@@ -177,7 +177,7 @@ export default function ProfilePage() {
   async function handleEmailSignup(e) {
     e.preventDefault();
     if (!auth) {
-      alert(AUTH_MISSING_ALERT);
+      setAuthFormError(AUTH_MISSING_ALERT);
       return;
     }
     const email = emailDraft.trim();
@@ -225,7 +225,7 @@ export default function ProfilePage() {
   async function handleEmailSignin(e) {
     e.preventDefault();
     if (!auth) {
-      alert(AUTH_MISSING_ALERT);
+      setAuthFormError(AUTH_MISSING_ALERT);
       return;
     }
     const email = emailDraft.trim();
@@ -267,7 +267,7 @@ export default function ProfilePage() {
 
   async function handlePasswordReset() {
     if (!auth) {
-      alert(AUTH_MISSING_ALERT);
+      setAuthFormError(AUTH_MISSING_ALERT);
       return;
     }
     const email = emailDraft.trim();
@@ -359,7 +359,7 @@ export default function ProfilePage() {
                 <strong>Google</strong> → On; under <strong>Settings</strong> →{" "}
                 <strong>Authorized domains</strong>, add your site host (e.g.{" "}
                 <code className="font-mono text-[11px]">localhost</code>,{" "}
-                <code className="font-mono text-[11px]">your-app.vercel.app</code>).
+                <code className="font-mono text-[11px]">marketplace-app-43621.vercel.app</code>).
               </li>
             </ol>
           </div>

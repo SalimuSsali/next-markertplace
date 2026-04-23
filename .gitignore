@@ -3,6 +3,8 @@ node_modules/
 
 # Local secrets (never commit)
 .env*.local
+.env.vercel.pull
+.env.vercel.production
 
 # Next.js / Turbopack build output (custom distDir names included)
 .next/
