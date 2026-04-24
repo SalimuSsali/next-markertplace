@@ -1,0 +1,14 @@
+# Keep `vercel deploy` uploads small (same idea as .gitignore; CLI may not skip all by default)
+node_modules
+.next
+.next-*
+.next-win
+android
+www
+out
+dist
+.git
+*.log
+coverage
+.vscode
+.idea
