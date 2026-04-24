@@ -9,6 +9,8 @@ import {
 } from "../../../lib/r2";
 
 export const runtime = "nodejs";
+/** Vercel / Next: allow slow uploads to R2 (Hobby max is still 10s unless you upgrade). */
+export const maxDuration = 60;
 
 const WRONG_PUBLIC_URL_MSG =
   "R2_PUBLIC_BASE_URL must be your bucket’s public URL (r2.dev or custom domain), e.g. https://pub-xxxxxx.r2.dev — not https://…r2.cloudflarestorage.com (that URL is only for the S3 API). In R2: open your bucket → Settings → Public access → allow r2.dev or connect a custom domain.";

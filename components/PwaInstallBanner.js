@@ -23,6 +23,9 @@ export function PwaInstallBanner() {
   useEffect(() => {
     if (isStandaloneDisplay()) return undefined;
 
+    // Chrome may log: "Banner not shown: beforeinstallprompt... preventDefault()".
+    // That is expected: we delay the *browser* mini-infobar until the user taps
+    // "Install" below, which then calls `deferredPrompt.prompt()`.
     const onBeforeInstall = (e) => {
       e.preventDefault();
       setDeferred(e);
