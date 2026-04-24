@@ -329,9 +329,53 @@ function AddPageInner() {
     setItemImageUrls((prev) => prev.filter((_, i) => i !== index));
   }
 
+  const needsSignIn = !authUser;
+  const needsVerification = !!authUser && !authUser.emailVerified;
+
   return (
     <main className="app-shell">
       <h1 className="app-title mb-5">Add</h1>
+
+      {needsSignIn ? (
+        <div className="mb-5 rounded-xl border border-red-200 bg-red-50/90 p-4 text-sm text-red-900">
+          <p className="font-semibold">Sign in required</p>
+          <p className="mt-1">
+            You must create an account (or sign in) with your email and password before you
+            can post.
+          </p>
+          <div className="mt-3 flex gap-2">
+            <a
+              href="/login?next=/add"
+              className="rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white no-underline hover:bg-red-700"
+            >
+              Sign in
+            </a>
+            <a
+              href="/signup"
+              className="rounded-lg border border-red-300 bg-white px-3 py-2 text-xs font-semibold text-red-800 no-underline hover:bg-red-100"
+            >
+              Create account
+            </a>
+          </div>
+        </div>
+      ) : null}
+
+      {needsVerification ? (
+        <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50/90 p-4 text-sm text-amber-950">
+          <p className="font-semibold">Verify your email to post</p>
+          <p className="mt-1">
+            We sent a verification link to{" "}
+            <span className="font-mono">{authUser.email}</span>. Open it to confirm your
+            account, then refresh this page.
+          </p>
+          <a
+            href="/account"
+            className="mt-3 inline-block rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-900 no-underline hover:bg-amber-100"
+          >
+            Go to Account (resend link)
+          </a>
+        </div>
+      ) : null}
 
       <div className="mb-6 flex flex-col gap-2.5">
         <button
@@ -842,7 +886,7 @@ function AddPageInner() {
 
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || needsSignIn || needsVerification}
           className="app-btn-primary mt-1 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {!saving ? "Submit" : "Posting..."}

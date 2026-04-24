@@ -3,6 +3,15 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // ---- Helpers ----
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
     // --- Item in-app chat (strict) ---
     function convParticipants() {
       return resource.data.buyerId == request.auth.uid
@@ -21,9 +30,9 @@ service cloud.firestore {
     }
 
     match /conversations/{conversationId} {
-      allow read: if request.auth != null && convParticipants();
+      allow read: if isSignedIn() && convParticipants();
 
-      allow create: if request.auth != null
+      allow create: if isVerified()
         && convIdMatchesPayload()
         && convParticipantsCreate()
         && request.resource.data.keys().hasAll(['itemId', 'buyerId', 'sellerId', 'createdAt'])
@@ -34,11 +43,11 @@ service cloud.firestore {
       allow update, delete: if false;
 
       match /messages/{messageId} {
-        allow read: if request.auth != null
+        allow read: if isSignedIn()
           && (get(/databases/$(database)/documents/conversations/$(conversationId)).data.buyerId == request.auth.uid
             || get(/databases/$(database)/documents/conversations/$(conversationId)).data.sellerId == request.auth.uid);
 
-        allow create: if request.auth != null
+        allow create: if isVerified()
           && (get(/databases/$(database)/documents/conversations/$(conversationId)).data.buyerId == request.auth.uid
             || get(/databases/$(database)/documents/conversations/$(conversationId)).data.sellerId == request.auth.uid)
           && request.resource.data.senderId == request.auth.uid
@@ -51,15 +60,15 @@ service cloud.firestore {
       }
     }
 
-    // --- Rest of app (tighten for production) ---
+    // --- Rest of app ---
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
     match /items/{itemId} {
       allow read: if true;
-      // New listings: seller id, lifecycle fields (Timestamps + active status).
-      allow create: if request.auth != null
+      // New listings require a verified email.
+      allow create: if isVerified()
         && request.resource.data.keys().hasAll([
           'userId', 'createdAt', 'expiresAt', 'status'
         ])
@@ -70,7 +79,7 @@ service cloud.firestore {
         && request.resource.data.createdAt is timestamp
         && request.resource.data.expiresAt is timestamp;
       // Owner by userId, or legacy docs without a real userId (email match only).
-      allow update, delete: if request.auth != null && (
+      allow update, delete: if isVerified() && (
         (resource.data.keys().hasAll(['userId'])
           && resource.data.userId is string
           && resource.data.userId.size() > 0
@@ -89,36 +98,36 @@ service cloud.firestore {
 
     match /shops/{shopId} {
       allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null;
+      allow create: if isVerified();
+      allow update, delete: if isVerified();
     }
 
     match /requests/{requestId} {
       allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null;
+      allow create: if isVerified();
+      allow update, delete: if isVerified();
     }
 
     match /services/{serviceId} {
       allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null;
+      allow create: if isVerified();
+      allow update, delete: if isVerified();
     }
 
     match /properties/{propertyId} {
       allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null;
+      allow create: if isVerified();
+      allow update, delete: if isVerified();
     }
 
     match /reviews/{reviewId} {
       allow read: if true;
-      allow create: if request.auth != null;
-      allow update, delete: if request.auth != null;
+      allow create: if isVerified();
+      allow update, delete: if isVerified();
     }
 
     match /notifications/{notificationId} {
-      allow read, create: if request.auth != null;
+      allow read, create: if isSignedIn();
       allow update, delete: if false;
     }
   }
