@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../lib/firebase";
 import { ensureUserDoc } from "../../lib/ensureUserDoc";
@@ -14,7 +14,7 @@ import {
   SELLER_SIGNUP_MODE,
 } from "../../lib/sellerIdentity";
 
-export default function LoginPage() {
+function LoginInner() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/account";
@@ -136,5 +136,20 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="app-shell">
+          <h1 className="app-title">Sign in</h1>
+          <p className="mt-4 text-sm text-neutral-500">Loading…</p>
+        </main>
+      }
+    >
+      <LoginInner />
+    </Suspense>
   );
 }
