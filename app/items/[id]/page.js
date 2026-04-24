@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { deleteDoc, doc, getDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import ItemSellerChat from "../../../components/ItemSellerChat";
 import ItemReviewsSection from "../../../components/ItemReviewsSection";
 import { ItemExpiryWarning } from "../../../components/ExpiryWarning";
@@ -16,6 +16,7 @@ import {
 import { isExpired, isExpiringSoon } from "../../../lib/expiry";
 import {
   getItemSellerUserId,
+  getItemSellerUserIdForViewer,
   nextItemExpiresAfterRenewClient,
   renewItem,
 } from "../../../lib/itemLifecycle";
@@ -36,6 +37,8 @@ export default function ItemDetailPage() {
   const [imageFailed, setImageFailed] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [renewing, setRenewing] = useState(false);
+  /** When the item has `shopId` but no `userId`, the shop doc may still carry the owner uid. */
+  const [sellerUidFromShop, setSellerUidFromShop] = useState(null);
   const authUser = useFirebaseAuthUser();
   const currentUserEmail = authUser?.email ?? null;
   const fbBoot = useFirebaseBootstrapVersion();
@@ -71,6 +74,65 @@ export default function ItemDetailPage() {
 
     fetchItem();
   }, [id, fbBoot]);
+
+  /** Legacy items without `userId`: backfill from the verified owner (matches Firestore rules). */
+  useEffect(() => {
+    if (!db || !id || !item) return;
+    if (getItemSellerUserId(item)) return;
+    const eAuth = String(authUser?.email ?? "").trim().toLowerCase();
+    const eItem = String(item?.email ?? "").trim().toLowerCase();
+    if (!eAuth || !eItem || eAuth !== eItem || !authUser?.uid) return;
+    if (authUser.emailVerified !== true) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        await updateDoc(doc(db, "items", id), { userId: authUser.uid });
+        if (!cancelled) {
+          setItem((prev) => (prev ? { ...prev, userId: authUser.uid } : null));
+        }
+      } catch (err) {
+        devError("ItemDetailPage backfill userId", err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [db, id, item, authUser, fbBoot]);
+
+  useEffect(() => {
+    if (!db || !item) {
+      setSellerUidFromShop(null);
+      return;
+    }
+    if (getItemSellerUserId(item)) {
+      setSellerUidFromShop(null);
+      return;
+    }
+    const shopId = String(item.shopId ?? "").trim();
+    if (!shopId) {
+      setSellerUidFromShop(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, "shops", shopId));
+        if (cancelled || !snap.exists()) return;
+        const u = snap.data()?.userId;
+        const uid = u != null ? String(u).trim() : "";
+        setSellerUidFromShop(uid || null);
+      } catch (err) {
+        devError("ItemDetailPage fetch shop for seller", err);
+        if (!cancelled) setSellerUidFromShop(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [db, item, fbBoot]);
+
+  const sellerUserIdForChat =
+    getItemSellerUserIdForViewer(item, authUser) || sellerUidFromShop;
 
   const imageUrls = useMemo(() => getItemImageUrls(item), [item]);
 
@@ -256,9 +318,14 @@ export default function ItemDetailPage() {
         </p>
       </div>
 
-      <ItemReviewsSection itemId={id} />
+      <ItemSellerChat
+        itemId={id}
+        sellerUserId={sellerUserIdForChat}
+        sellerDisplayName={item.sellerName ? String(item.sellerName) : null}
+        whatsappHref={whatsappHref}
+      />
 
-      <ItemSellerChat itemId={id} sellerUserId={getItemSellerUserId(item)} />
+      <ItemReviewsSection itemId={id} />
 
       <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         {whatsappHref ? (

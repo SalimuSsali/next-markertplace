@@ -42,7 +42,7 @@ A Next.js marketplace client: Firestore listings, Firebase Auth, optional Cloudf
    npm run dev
    ```
 
-  Open [http://localhost:3010](http://localhost:3010). If Turbopack misbehaves on your machine, run with `NEXT_DISABLE_TURBOPACK=1` (see `.env.example`).
+  Open [http://localhost:3000](http://localhost:3000). The dev port is defined in **`scripts/devServerPort.cjs`** (single place to change it). If Turbopack misbehaves on your machine, run with `NEXT_DISABLE_TURBOPACK=1` (see `.env.example`).
 
 4. **Production**
 

@@ -14,6 +14,12 @@ import { ensureConversation, sendConversationMessage } from "../lib/conversation
 import { db } from "../lib/firebase";
 import { devError } from "../lib/devLog";
 
+const INTEREST_SUGGESTIONS = [
+  "Is this still available?",
+  "I'm interested in this item.",
+  "Could you share more details?",
+];
+
 function messageTime(m) {
   const v = m.createdAt;
   if (v?.toDate) return v.toDate().toLocaleString();
@@ -24,8 +30,14 @@ function messageTime(m) {
 /**
  * In-app chat between signed-in buyer and listing owner (`sellerUserId`).
  * Sellers can open existing threads for this item from the same block.
+ * @param {{ itemId: string, sellerUserId: string | null, sellerDisplayName?: string | null, whatsappHref?: string | null }} props
  */
-export default function ItemSellerChat({ itemId, sellerUserId }) {
+export default function ItemSellerChat({
+  itemId,
+  sellerUserId,
+  sellerDisplayName = null,
+  whatsappHref = null,
+}) {
   const authUser = useFirebaseAuthUser();
   const uid = authUser?.uid ?? null;
   const fbBoot = useFirebaseBootstrapVersion();
@@ -34,6 +46,8 @@ export default function ItemSellerChat({ itemId, sellerUserId }) {
   const [sellerThreads, setSellerThreads] = useState([]);
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
+  /** Buyer: first message before the thread is opened (interest / intro). */
+  const [interestText, setInterestText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const bottomRef = useRef(null);
@@ -100,14 +114,24 @@ export default function ItemSellerChat({ itemId, sellerUserId }) {
     }
   }, [messages, open]);
 
-  const openBuyerChat = useCallback(async () => {
+  useEffect(() => {
+    setInterestText("");
+    setDraft("");
+  }, [itemId]);
+
+  const sendFirstMessageToSeller = useCallback(async () => {
+    const text = interestText.trim();
     setError(null);
+    if (!text) {
+      setError("Write a short message so the seller knows you are interested.");
+      return;
+    }
     if (!db) {
       setError("Database is not available.");
       return;
     }
     if (!uid) {
-      alert("Sign in to chat with the seller.");
+      alert("Sign in to message the seller.");
       return;
     }
     if (!sellerUserId) {
@@ -115,7 +139,6 @@ export default function ItemSellerChat({ itemId, sellerUserId }) {
       return;
     }
     if (uid === sellerUserId) {
-      alert("You cannot start a chat on your own listing.");
       return;
     }
     setBusy(true);
@@ -125,20 +148,22 @@ export default function ItemSellerChat({ itemId, sellerUserId }) {
         buyerId: uid,
         sellerId: sellerUserId,
       });
+      await sendConversationMessage(db, cid, uid, text);
       setConversationId(cid);
       setOpen(true);
+      setInterestText("");
     } catch (err) {
-      devError("ItemSellerChat ensureConversation", err);
+      devError("ItemSellerChat sendFirstMessage", err);
       const msg = err instanceof Error ? err.message : "";
       setError(
         msg === "Chat unavailable: seller not found"
           ? "Chat unavailable: seller not found"
-          : "Could not open chat. Check your connection and Firestore rules.",
+          : "Could not send your message. Check your connection and Firestore rules.",
       );
     } finally {
       setBusy(false);
     }
-  }, [db, itemId, sellerUserId, uid, fbBoot]);
+  }, [db, itemId, interestText, sellerUserId, uid, fbBoot]);
 
   function openSellerThread(threadDocId) {
     setError(null);
@@ -165,13 +190,44 @@ export default function ItemSellerChat({ itemId, sellerUserId }) {
   }
 
   if (!sellerUserId) {
+    const hasWa = Boolean(whatsappHref);
     return (
       <section
-        className="mb-6 rounded-xl border border-amber-100 bg-amber-50/80 p-4 text-sm text-amber-900"
-        role="alert"
-        aria-live="polite"
+        id="seller-chat"
+        className="mb-6 scroll-mt-24 rounded-xl border border-amber-100 bg-amber-50/80 p-4 text-sm text-amber-900"
+        role="region"
+        aria-labelledby={`item-chat-unavailable-${itemId}`}
       >
-        Chat unavailable: seller not found
+        <h2
+          id={`item-chat-unavailable-${itemId}`}
+          className="mb-1 text-base font-bold text-amber-950"
+        >
+          In-app chat unavailable
+        </h2>
+        <p className="mb-2 leading-relaxed">
+          This listing is not linked to a seller account we can use for messages (missing{" "}
+          <span className="font-mono text-xs">userId</span> on the post, or the seller used a
+          different sign-in). If you posted this, open this page while signed in with the same
+          account as when you created the item so we can connect your profile.
+        </p>
+        {hasWa ? (
+          <p className="mb-2">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-amber-950 underline"
+            >
+              Open WhatsApp
+            </a>{" "}
+            if the seller left a number on this listing.
+          </p>
+        ) : (
+          <p className="text-amber-800/90">
+            Sellers can add a WhatsApp number when posting so buyers can reach them from this
+            page.
+          </p>
+        )}
       </section>
     );
   }
@@ -248,8 +304,16 @@ export default function ItemSellerChat({ itemId, sellerUserId }) {
   ) : null;
 
   return (
-    <section className="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <h2 className="mb-2 text-base font-bold text-neutral-900">Chat with seller</h2>
+    <section
+      id="seller-chat"
+      className="mb-6 scroll-mt-24 rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+    >
+      <h2 className="mb-1 text-base font-bold text-neutral-900">Chat with seller</h2>
+      {sellerDisplayName ? (
+        <p className="mb-2 text-sm text-neutral-500">
+          {isSeller ? "You are the seller" : `Listing by ${sellerDisplayName}`}
+        </p>
+      ) : null}
       {!uid ? (
         <p className="text-sm text-neutral-600">Sign in to message the seller.</p>
       ) : isSeller ? (
@@ -279,14 +343,63 @@ export default function ItemSellerChat({ itemId, sellerUserId }) {
       ) : (
         <>
           {!open ? (
-            <button
-              type="button"
-              onClick={openBuyerChat}
-              disabled={busy || !db}
-              className="app-btn-primary disabled:opacity-60"
-            >
-              {busy ? "Opening…" : "Chat seller"}
-            </button>
+            <div className="flex flex-col gap-3">
+              <p className="text-sm text-neutral-600">
+                Tell the seller you are interested, ask a question, or suggest a time to meet. They
+                will see your message in their chat for this listing.
+              </p>
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Quick message ideas">
+                {INTEREST_SUGGESTIONS.map((line) => (
+                  <button
+                    key={line}
+                    type="button"
+                    onClick={() =>
+                      setInterestText((prev) => {
+                        const p = prev.trim();
+                        return p ? `${p} ${line}` : line;
+                      })
+                    }
+                    className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-left text-xs font-medium text-blue-900 shadow-sm hover:bg-blue-100"
+                  >
+                    {line}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label
+                  htmlFor={`item-interest-${itemId}`}
+                  className="text-sm font-semibold text-neutral-800"
+                >
+                  Your message to the seller
+                </label>
+                <textarea
+                  id={`item-interest-${itemId}`}
+                  value={interestText}
+                  onChange={(e) => setInterestText(e.target.value)}
+                  placeholder="e.g. I’m interested. Is the price negotiable?"
+                  rows={4}
+                  maxLength={2000}
+                  disabled={busy || !db}
+                  className="w-full resize-y rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-neutral-900 shadow-sm placeholder:text-neutral-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                />
+                <p className="text-xs text-neutral-500">
+                  {interestText.length.toLocaleString()} / 2,000
+                </p>
+              </div>
+              {error ? (
+                <p className="text-sm font-medium text-red-600" role="alert">
+                  {error}
+                </p>
+              ) : null}
+              <button
+                type="button"
+                onClick={sendFirstMessageToSeller}
+                disabled={busy || !db || !interestText.trim()}
+                className="app-btn-primary min-h-[48px] disabled:opacity-50"
+              >
+                {busy ? "Sending…" : "Send message to seller"}
+              </button>
+            </div>
           ) : null}
           {chatPanel}
         </>

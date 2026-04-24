@@ -3,13 +3,11 @@
     "node": "20.x"
   },
   "scripts": {
-    "dev": "cmd /c \"node scripts/gen-firebase-messaging-sw.mjs & node scripts/kill-ports.js 3010 3000 3001 >nul 2>&1 & node scripts/open-browser.js & next dev -p 3010\"",
-    "dev:3010": "next dev -p 3010",
+    "dev": "node scripts/run-dev.cjs",
     "prebuild": "node scripts/ensure-pwa-icons.mjs && node scripts/gen-firebase-messaging-sw.mjs",
     "build": "next build",
     "build:fresh": "node scripts/ensure-pwa-icons.mjs && node scripts/gen-firebase-messaging-sw.mjs && node scripts/clean-next-all.mjs && next build",
     "start": "next start",
-    "start:3010": "next start -p 3010",
     "start:browser": "node scripts/open-browser.js",
     "pwa:icons": "node scripts/ensure-pwa-icons.mjs",
     "android:icons": "npx @capacitor/assets generate --android --assetPath assets",
@@ -29,7 +27,6 @@
     "@capacitor/core": "^7.6.2",
     "@capacitor/splash-screen": "^7.0.5",
     "@capacitor/status-bar": "^7.0.6",
-    "@smithy/node-http-handler": "^4.6.0",
     "dotenv": "^16.5.0",
     "firebase": "^12.11.0",
     "next": "^16.2.2",

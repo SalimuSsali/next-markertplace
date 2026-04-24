@@ -12,7 +12,7 @@ const DEFAULT_SERVER_URL = "https://marketplace-app-43621.vercel.app";
 
 /**
  * Android shell loads your Next.js deployment (or dev server) in a WebView.
- * Override in `.env.local`: `CAPACITOR_SERVER_URL=...` (e.g. `http://10.0.2.2:3010` for emulator + local dev).
+ * Override in `.env.local`: `CAPACITOR_SERVER_URL=...` (e.g. `http://10.0.2.2:3000` for emulator + local dev — port must match `scripts/devServerPort.cjs`).
  */
 const url =
   (process.env.CAPACITOR_SERVER_URL ?? "").trim() || DEFAULT_SERVER_URL;
