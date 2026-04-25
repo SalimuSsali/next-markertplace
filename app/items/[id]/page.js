@@ -325,9 +325,10 @@ export default function ItemDetailPage() {
         whatsappHref={whatsappHref}
       />
 
-      <ItemReviewsSection itemId={id} />
-
-      <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+      <div
+        className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap"
+        id="item-contact-wa"
+      >
         {whatsappHref ? (
           <a
             href={whatsappHref}
@@ -344,6 +345,8 @@ export default function ItemDetailPage() {
           </p>
         )}
       </div>
+
+      <ItemReviewsSection itemId={id} />
 
       <div className="mt-4">
         <button

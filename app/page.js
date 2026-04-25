@@ -23,6 +23,7 @@ import { devError } from "../lib/devLog";
 import { db } from "../lib/firebase";
 import { getItemLocationSearchText } from "../lib/itemLocation";
 import { itemLocationMatchesNeedle } from "../lib/locationNearby";
+import { ItemCardChatWaRow } from "../components/ItemCardChatWaRow";
 import { DEFAULT_CATEGORY_ID, itemMatchesCategory, normalizeCategoryId } from "../lib/categories";
 import { useSearchParams } from "next/navigation";
 
@@ -429,54 +430,59 @@ function HomePageInner() {
                           const imageCount = getItemImageUrls(item).length;
 
                           return (
-                            <Link
+                            <div
                               key={item.id}
-                              href={`/items/${item.id}`}
-                              className="group block overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm no-underline text-inherit transition hover:shadow-md"
+                              className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
                             >
-                              <div className="relative aspect-square w-full bg-gray-100">
-                                {url ? (
-                                  // eslint-disable-next-line @next/next/no-img-element
-                                  <img
-                                    src={url}
-                                    alt=""
-                                    loading="lazy"
-                                    className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.01]"
-                                  />
-                                ) : (
-                                  <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-neutral-500">
-                                    No Image
-                                  </div>
-                                )}
-
-                                {/* soft gradient so overlay text never “collides” with the image */}
-                                <div
-                                  className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent"
-                                  aria-hidden
-                                />
-
-                                {imageCount > 1 ? (
-                                  <div className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-1 text-[10px] font-semibold text-white">
-                                    +{imageCount - 1}
-                                  </div>
-                                ) : null}
-
-                                <div className="absolute inset-x-0 bottom-0 p-2">
-                                  <p className="line-clamp-2 text-xs font-bold leading-snug text-white">
-                                    {getItemTitle(item)}
-                                  </p>
-                                  <p className="mt-0.5 text-[11px] font-semibold text-white/95">
-                                    {formatItemPrice(item)}
-                                  </p>
-                                  <div className="mt-1">
-                                    <ItemExpiryCountdown
-                                      expiresAt={item.expiresAt}
-                                      className="text-[10px] text-white/95 drop-shadow-sm"
+                              <Link
+                                href={`/items/${item.id}`}
+                                className="group block min-h-0 flex-1 overflow-hidden no-underline text-inherit"
+                              >
+                                <div className="relative aspect-square w-full bg-gray-100">
+                                  {url ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                      src={url}
+                                      alt=""
+                                      loading="lazy"
+                                      className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.01]"
                                     />
+                                  ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-neutral-500">
+                                      No Image
+                                    </div>
+                                  )}
+
+                                  {/* soft gradient so overlay text never “collides” with the image */}
+                                  <div
+                                    className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent"
+                                    aria-hidden
+                                  />
+
+                                  {imageCount > 1 ? (
+                                    <div className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-1 text-[10px] font-semibold text-white">
+                                      +{imageCount - 1}
+                                    </div>
+                                  ) : null}
+
+                                  <div className="absolute inset-x-0 bottom-0 p-2">
+                                    <p className="line-clamp-2 text-xs font-bold leading-snug text-white">
+                                      {getItemTitle(item)}
+                                    </p>
+                                    <p className="mt-0.5 text-[11px] font-semibold text-white/95">
+                                      {formatItemPrice(item)}
+                                    </p>
+                                    <div className="mt-1">
+                                      <ItemExpiryCountdown
+                                        expiresAt={item.expiresAt}
+                                        className="text-[10px] text-white/95 drop-shadow-sm"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </Link>
+                              </Link>
+                              <ItemCardChatWaRow item={item} compact />
+                            </div>
                           );
                         })}
                       </div>

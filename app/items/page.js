@@ -23,6 +23,7 @@ import { getItemTitle } from "../../lib/itemFields";
 import { getItemPrimaryImageUrl } from "../../lib/itemImages";
 import { db } from "../../lib/firebase";
 import { CategoryGrid } from "../../components/CategoryGrid";
+import { ItemCardChatWaRow } from "../../components/ItemCardChatWaRow";
 import {
   DEFAULT_CATEGORY_ID,
   getItemCategoryId,
@@ -379,6 +380,7 @@ function ItemsPageInner() {
                     </div>
                   </div>
                 </Link>
+                <ItemCardChatWaRow item={item} />
                 {soon ? (
                   <div
                     className="border-t border-amber-200 bg-amber-50/95 px-3 py-2"
