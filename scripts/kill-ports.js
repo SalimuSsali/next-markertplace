@@ -2,25 +2,11 @@ const { execSync } = require("child_process");
 const { PORT: CANONICAL_DEV_PORT } = require("./devServerPort.cjs");
 
 /**
- * When no ports are passed on the command line, free these so the Next app on
- * `CANONICAL_DEV_PORT` (see devServerPort.cjs) can bind cleanly. Includes 3010 to
- * clear the old project default so nothing “sticks” to the previous port.
+ * Frees the canonical Next dev port (see `devServerPort.cjs`) so `npm run dev` can bind.
+ * To clear another port (e.g. a stuck process on a different number), run:
+ * `node scripts/kill-ports.js 3010` — do not add broad port lists; that was killing unrelated local servers.
  */
-const DEFAULT_DEV_PORTS = [
-  CANONICAL_DEV_PORT,
-  3001,
-  3002,
-  3003,
-  3010,
-  4000,
-  4200,
-  5000,
-  5173,
-  5174,
-  8080,
-  8888,
-  9000,
-];
+const DEFAULT_DEV_PORTS = [CANONICAL_DEV_PORT];
 
 function getListeningPids(port) {
   const cmd = `netstat -ano | findstr :${port} | findstr LISTENING`;

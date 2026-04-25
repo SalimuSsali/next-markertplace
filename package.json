@@ -18,6 +18,7 @@
     "android:open": "npx cap open android",
     "verify": "node scripts/ensure-pwa-icons.mjs && node scripts/gen-firebase-messaging-sw.mjs && npx tsc --noEmit",
     "build:win": "node scripts/ensure-pwa-icons.mjs && node scripts/gen-firebase-messaging-sw.mjs && set NEXT_DIST_DIR=.next-win&& next build",
+    "vercel:env": "node scripts/vercel-r2-env-checklist.cjs",
     "deploy:vercel": "node scripts/vercel-deploy-hint.cjs && npx vercel deploy --prod"
   },
   "dependencies": {

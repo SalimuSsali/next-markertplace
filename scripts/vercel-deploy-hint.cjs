@@ -1,10 +1,9 @@
 /**
- * Reminder: local `npm run dev` (port 3000) and Vercel production use the same Next.js app.
- * Uploads hit POST /api/r2-upload with the same `lib/r2.js` code. For production uploads to
- * work like localhost, copy the same R2_* (and Firebase) values from `.env.local` into
- * Vercel → Project → Settings → Environment Variables (Production).
+ * Official production is Vercel (git push / dashboard deploy). Port 3000 is only `npm run dev`.
+ * Image upload is POST /api/r2-upload — same code on Vercel; R2 secrets must exist in Vercel env.
  */
 console.log(
-  "\n[deploy] Local: npm run dev → http://localhost:3000 (R2_* in .env.local).\n" +
-    "Vercel: same R2_* + Firebase keys in Project → Environment Variables, then deploy.\n",
+  "\n[deploy] Production: Vercel (set R2_* + Firebase in Project → Environment Variables → Redeploy).\n" +
+    "Local dev: npm run dev uses port 3000 only on your PC — it does not replace Vercel env.\n" +
+    "Checklist: npm run vercel:env\n",
 );

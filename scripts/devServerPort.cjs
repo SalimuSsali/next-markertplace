@@ -1,7 +1,7 @@
 /**
- * Single source of truth for the local Next.js dev server port and URL.
- * Previously this project used 3010; all tooling now uses 3000 (Next default).
- * Update this file (and your CAPACITOR_SERVER_URL in .env.local) if you must change the port.
+ * Single source of truth for the local Next.js dev server port and dev URLs
+ * (localhost, emulator `10.0.2.2`, and docs). Change only `PORT` here, then
+ * match `CAPACITOR_SERVER_URL` in `.env.local` (e.g. `http://LAN_IP:PORT`).
  */
 const PORT = 3000;
 

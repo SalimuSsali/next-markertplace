@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { logServerError } from "../../../lib/devLog";
 import {
+  cleanR2EnvString,
   getR2Config,
   getR2EnvShapeError,
   isR2ApiEndpointUrl,
@@ -28,7 +29,7 @@ function safeFileName(name) {
 }
 
 export async function POST(req) {
-  const rawPublic = process.env.R2_PUBLIC_BASE_URL?.trim() ?? "";
+  const rawPublic = cleanR2EnvString(process.env.R2_PUBLIC_BASE_URL);
   if (rawPublic && isR2ApiEndpointUrl(rawPublic)) {
     return Response.json({ error: { message: WRONG_PUBLIC_URL_MSG } }, { status: 400 });
   }
