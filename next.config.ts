@@ -27,10 +27,23 @@ function getDistDir(): string {
   return ".next";
 }
 
+/** Hosts (no port) allowed to use Next.js dev HMR from another origin, e.g. phone → http://LAN_IP:3000 */
+function getAllowedDevOrigins(): string[] {
+  return (process.env.NEXT_DEV_ALLOWED_ORIGINS ?? "")
+    .split(/[,\n]+/)
+    .map((s) => s.trim().replace(/^https?:\/\//, ""))
+    .map((s) => (s.includes(":") ? s.split(":")[0]! : s))
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+const allowedDevOrigins = getAllowedDevOrigins();
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   distDir: getDistDir(),
   typedRoutes: false,
+  ...(allowedDevOrigins.length > 0 ? { allowedDevOrigins } : {}),
 
   async redirects() {
     return [
